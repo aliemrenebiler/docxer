@@ -3,7 +3,7 @@ name = "docxer"
 dynamic = ["version"]
 description = "Generate Word documents from JSON data and a styled .docx template"
 requires-python = ">=3.10"
-dependencies = ["docxtpl>=0.20"]
+dependencies = ["docxtpl>=0.20", "certifi"]
 
 [project.scripts]
 docxer = "docxer.cli:main"

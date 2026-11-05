@@ -36,7 +36,7 @@ jobs:
         run: |
           pip install . pyinstaller
           pyinstaller --onefile --name docxer \
-            --collect-all docxtpl --collect-all docx --collect-data docxer \
+            --collect-all docxtpl --collect-all docx --collect-data docxer --collect-all certifi \
             packaging/docxer_entry.py
 
       - name: Smoke test

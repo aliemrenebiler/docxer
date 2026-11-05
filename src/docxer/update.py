@@ -5,6 +5,7 @@ from __future__ import annotations
 import hashlib
 import os
 import platform
+import ssl
 import sys
 import tempfile
 import urllib.error
@@ -41,10 +42,24 @@ def asset_name() -> str:
     return f"docxer-{system}-{arch}"
 
 
+def _ssl_context() -> ssl.SSLContext:
+    """TLS context with a CA bundle that ships with docxer.
+
+    The release binary bundles its own Python, whose default certificate path
+    does not exist on most machines, so verification would always fail.
+    """
+    try:
+        import certifi
+
+        return ssl.create_default_context(cafile=certifi.where())
+    except ImportError:
+        return ssl.create_default_context()
+
+
 def _fetch(url: str) -> bytes:
     req = urllib.request.Request(url, headers={"User-Agent": f"docxer/{__version__}"})
     try:
-        with urllib.request.urlopen(req, timeout=60) as resp:
+        with urllib.request.urlopen(req, timeout=60, context=_ssl_context()) as resp:
             return resp.read()
     except (urllib.error.URLError, OSError) as e:
         raise UpdateError(f"could not download {url}: {e}") from e
